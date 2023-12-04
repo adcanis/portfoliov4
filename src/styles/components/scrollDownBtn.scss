@@ -10,7 +10,6 @@
     height: 500px;
     border-radius: 50%;
     background: transparent;
-    pointer-events: none;
     @media (max-width: $layout-breakpoint-small) {
       top: 50%;
       right: 10%;
