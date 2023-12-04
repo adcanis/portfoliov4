@@ -10,7 +10,7 @@ const SpaceMan = ({ mousePosition }: { mousePosition: THREE.Vector3 }) => {
   React.useEffect(() => {
     gltf.scene.scale.set(0.66, 0.66, 0.66);
     gltf.scene.position.set(2.5, -1, -2);
-    gltf.scene.traverse((object) => {
+    gltf.scene.traverse((object: any) => {
       if (object instanceof THREE.Mesh) {
         object.castShadow = true;
         object.receiveShadow = true;

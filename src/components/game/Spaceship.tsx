@@ -13,7 +13,7 @@ const Spaceship = ({ mousePosition }: { mousePosition: THREE.Vector3 }) => {
   React.useEffect(() => {
     gltf.scene.scale.set(0.1, 0.1, 0.1);
     gltf.scene.position.set(0, 0, -2.5);
-    gltf.scene.traverse((object) => {
+    gltf.scene.traverse((object: any) => {
       if (object instanceof THREE.Mesh) {
         object.castShadow = true;
         object.receiveShadow = true;

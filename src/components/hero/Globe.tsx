@@ -10,7 +10,7 @@ const Globe = ({ mousePosition }: { mousePosition: THREE.Vector3 }) => {
   React.useEffect(() => {
     gltf.scene.scale.set(1.75, 1.75, 1.75);
     gltf.scene.position.set(0, 1, 1);
-    gltf.scene.traverse((object) => {
+    gltf.scene.traverse((object: any) => {
       if (object instanceof THREE.Mesh) {
         object.castShadow = true;
         object.receiveShadow = true;
