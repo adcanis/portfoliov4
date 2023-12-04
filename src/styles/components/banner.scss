@@ -1,0 +1,27 @@
+.banner {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100vw;
+    height: 25vh;
+    margin-top: 50px;
+    overflow: hidden;
+    white-space: nowrap;
+    @media (max-width: $layout-breakpoint-medium) {
+        margin-top: 0;
+        height: 100%;
+        margin-bottom: -50px;
+    }
+    & h3 {
+        display: inline-block;
+        font-size: 10em;
+        margin: 0;
+        margin-bottom: 10px;
+        text-wrap: nowrap;
+        @media (max-width: $layout-breakpoint-medium) {
+            font-size: 5em;
+            margin-bottom: 0;
+        }
+    }
+  }

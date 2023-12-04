@@ -1,0 +1,8 @@
+Model Information:
+* title:	hexagonal planet map
+* source:	https://sketchfab.com/3d-models/hexagonal-planet-map-c83c4725ad914df6a0264af5b8969d8d
+* author:	tamminen (https://sketchfab.com/tamminen)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works

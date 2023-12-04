@@ -1,0 +1,47 @@
+.recognition-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background: $background-dark;
+    .recognition-body {
+        display: grid;
+        grid-template-columns: 3fr 3fr;
+        column-gap: 25px;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        @media (max-width: $layout-breakpoint-medium) {
+            width: 90%;
+        }
+        @media (max-width: $layout-breakpoint-small) {
+            grid-template-columns: 1fr;
+        }
+        .recognition {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            border-bottom: 1px solid $grey-dark;
+            & h1 {
+                font-size: 2.75rem;
+                font-family: $font-heavy;
+                margin: 0;
+                color: $grey-dark;
+                @media (max-width: $layout-breakpoint-medium) {
+                    font-size: 1.5rem;
+                }
+            }
+            & span {
+                font-size: 1.5rem;
+                margin-right: 10px;
+                color: $grey-dark;
+            }
+            @media (max-width: $layout-breakpoint-medium) {
+                height: 100%;
+            }
+        }
+    }
+}

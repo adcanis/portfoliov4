@@ -1,0 +1,110 @@
+.contact-container {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+    width: 100%;
+    bottom: -5px;
+    transform: translateX(-50%);
+    z-index: 99999;
+    .contact-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 50vh;
+        width: 66.66%;
+        background: $grey-light;
+        border-top-right-radius: 25px;
+        border-top-left-radius: 25px;
+        box-shadow: 0px 0px 25px 0px $shadow;
+        overflow-y: scroll;
+        &::-webkit-scrollbar {
+            width: 0px;
+            background: transparent !important;
+          }
+        &::-webkit-scrollbar-thumb {
+            background: $background-grey;
+            border-radius: 4px;
+        }
+        @media (max-width: $layout-breakpoint-small) {
+            width: 95%;
+            overflow-x: hidden;
+          }
+        .contact-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+            width: 100%;
+            margin-bottom: 50px;
+            & h1 {
+                font-size: 3rem;
+                font-weight: 700;
+                padding-top: 25px;
+                padding-left: 25px;
+                @media (max-width: $layout-breakpoint-small) {
+                    font-size: 1.5em;
+                    padding-top: 0;
+                  }
+            }
+            & button {
+                min-width: 48px;
+                font-size: 1.5rem;
+                margin-top: 25px;
+                margin-right: 25px;
+                
+                @media (max-width: $layout-breakpoint-small) {
+                    min-width: 36px;
+                    height: 36px;
+                  }
+            }
+        }
+        .contact-content {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            height: 100%;
+            @media (max-width: $layout-breakpoint-small) {
+                flex-direction: column;
+              }
+            .col-left {
+                display: flex;
+                width: 50%;
+                @media (max-width: $layout-breakpoint-small) {
+                    width: 100%;
+                  }
+            }
+            .col-right {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                padding-right: 50px;
+                height: 100%;
+                width: 50%;
+                @media (max-width: $layout-breakpoint-small) {
+                    width: 100%;
+                  }
+                form {
+                    .budget-btns-container {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        height: 64px;
+                        width: 364px;
+                        @media (max-width: $layout-breakpoint-small) {
+                            width: 100%;
+                          }
+                    }
+                    .form-submit {
+                        display: flex;
+                        justify-content: flex-end;
+                        & button > span {
+                            margin-left: 5px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

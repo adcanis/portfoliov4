@@ -1,0 +1,129 @@
+// Breakpoint Mixins
+@mixin breakpoint($point) {
+    @if $point == large {
+        @media (max-width: $layout-breakpoint-large) {
+            @content;
+        }
+    }
+    @else if $point == medium {
+        @media (max-width: $layout-breakpoint-medium) {
+            @content;
+        }
+    }
+    @else if $point == small {
+        @media (max-width: $layout-breakpoint-small) {
+            @content;
+        }
+    }
+    @else if $point == xsmall {
+        @media (max-width: $layout-breakpoint-xsmall) {
+            @content;
+        }
+    }
+}
+
+// Container Mixins
+@mixin page-container-default() {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+@mixin inner-container-default($width) {
+    display: flex;
+    flex-direction: column;
+    width: $width; 
+    height: 100%;
+}
+
+@mixin two-columns-60-40-default() {
+    display: flex;
+
+    .col-left {
+        flex: 60%; 
+        padding-right: 1rem; 
+    }
+
+    .col-right {
+        flex: 40%; 
+        padding-left: 1rem; 
+    }
+}
+
+@mixin two-columns-40-60-default() {
+    display: flex;
+
+    .col-left {
+        flex: 40%; 
+        padding-right: 1rem; 
+    }
+
+    .col-right {
+        flex: 60%; 
+        padding-left: 1rem; 
+    }
+}
+
+@mixin two-columns-even-default() {
+    display: flex;
+    justify-content: space-between;
+
+    .col {
+        flex: 1; // Equal width for each column
+        &:not(:last-child) {
+            margin-right: 1rem; // Optional: a gap between columns
+        }
+    }
+}
+
+@mixin three-columns-even-default {
+    display: flex;
+    justify-content: space-between;
+
+    .col {
+        flex: 1; // Equal width for each column
+        &:not(:last-child) {
+            margin-right: 1rem; // Optional: a gap between columns
+        }
+    }
+}
+
+// Button Mixins
+@mixin button-default($color, $background, $outline) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 42px;
+    min-width: 100px;
+    font-size: 1em;
+    font-weight: 500;
+    color: $color;
+    background: $background;
+    outline: $outline;
+    border-radius: 25px;
+    border: none;
+    transition: 650ms;
+    margin-bottom: 1em;
+}
+
+// Form Mixins
+@mixin form-label() {
+    color: $text;
+    font-size: 1.25em;
+    margin-bottom: 0.5em;
+}
+
+@mixin form-input() {
+    border: none !important;
+    width: 95%;
+    padding-left: 1em;
+    background: transparent !important;
+    font-size: 1em;
+    outline: 1px solid $shadow !important;
+    color: $text;
+    border-radius: 5px;
+    margin-bottom: 1em;
+}

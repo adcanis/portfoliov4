@@ -1,0 +1,36 @@
+.loader {
+    position: absolute;
+    @include page-container-default();
+    top: 0;
+    left: 0;
+    background: linear-gradient($background-dark, $dark);
+    .loader-animitation, .loader-finished {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        & h1 {
+            text-align: center;
+            font-size: 5em;
+            color: $text-light;
+            margin: 0;
+            @media (max-width: $layout-breakpoint-xsmall) {
+                font-size: 3em;
+            }
+            & span {
+                color: $yellow;
+            }
+        }
+        & button {
+            margin: 0;
+            width: 175px;
+            transition: 650ms;
+            z-index: 5;
+            &:hover {
+                background: $background-light;
+                color: $text;
+                transition: 0.4s ease-in-out;
+            }
+        }
+    }
+}

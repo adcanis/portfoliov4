@@ -1,0 +1,144 @@
+.App {
+  position:  relative;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background: linear-gradient($background-dark, $dark);
+  color: $text;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $background-grey;
+    border-radius: 4px;
+  }
+}
+
+// Containers
+.page-container {
+  @include page-container-default();
+}
+
+.body-container {
+  @include inner-container-default(80%);
+}
+
+// Buttons
+.btn-basic {
+  border: none;
+  background: transparent;
+  color: $text;
+  font-size: 1em;
+  font-weight: 500;
+  height: 42px;
+  transition: 650ms;
+  &:hover {
+    cursor: pointer;
+    opacity: 0.75;
+    transition: 0.4s ease-in-out;
+  }
+}
+.btn-underline {
+  border: none;
+  background: transparent;
+  color: $text;
+  font-size: 1em;
+  font-weight: 500;
+  height: 42px;
+  position: relative; 
+  overflow: hidden; 
+  transition: 650ms;
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%; 
+    right: 50%;
+    height: 2px; 
+    background: $light; 
+    transition: all 0.3s ease;
+  }
+  &:hover {
+    cursor: pointer;
+    opacity: 0.75;
+    transition: 0.4s ease-in-out;
+    &::after {
+      left: 0; 
+      right: 0;
+    }
+  }
+}
+.btn-blue {
+  @include button-default($text-light, $blue, none);
+  &:hover {
+      cursor: pointer;
+      color: $grey-dark;
+      background: $background-light;
+      transition: 0.4s ease-in-out;
+  }
+}
+.btn-transparent {
+  display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 42px;
+    min-width: 100px;
+    font-size: 1em;
+    font-weight: 500;
+    color: $text-light;
+    background: none;
+    outline: 1px solid $background-light;
+    border-radius: 25px;
+    border: none;
+    transition: 650ms;
+    margin-bottom: 1em;
+  &:hover {
+      cursor: pointer;
+      color: $text-light;
+      background: $background-dark;
+      transition: 0.4s ease-in-out;
+  }
+}
+.btn-transparent-dark {
+  @include button-default($text, transparent, 1px solid $shadow);
+  &:hover {
+      cursor: pointer;
+      color: $text-light;
+      background: $background-dark;
+      transition: 0.4s ease-in-out;
+  }
+}
+.btn-black {
+  @include button-default($text-light, $dark, 1px solid $shadow);
+  &:hover {
+      cursor: pointer;
+      background: transparent;
+      color: $text;
+      outline: 1px solid $shadow;
+      transition: 0.4s ease-in-out;
+  }
+}
+
+// Forms
+.form-layout {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  & label, input, textarea {
+      @include form-label();
+   }
+   & input, textarea {
+        border: none;
+        padding: 1em 0em 1em 0em;
+        background: transparent !important;
+        border-bottom: 1px solid $shadow;
+        margin-top: 0.5em;
+        margin-bottom: 1em;
+   }
+}

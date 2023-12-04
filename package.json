@@ -9,16 +9,34 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emailjs/browser": "^3.11.0",
+    "@react-three/drei": "^9.89.3",
+    "@react-three/fiber": "^8.15.12",
+    "@react-three/postprocessing": "^2.15.11",
+    "formik": "^2.4.5",
+    "framer-motion": "^10.16.12",
+    "glslify": "^7.1.1",
+    "luxon": "^3.4.4",
+    "next": "14.0.3",
+    "postprocessing": "^6.33.4",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.0.3"
+    "react-ga": "^3.3.1",
+    "react-icons": "^4.12.0",
+    "react-toastify": "^9.1.3",
+    "recoil": "^0.7.7",
+    "sass": "^1.69.5",
+    "scroller-motion": "^1.2.3",
+    "three": "^0.159.0",
+    "uuid": "^9.0.1",
+    "yup": "^1.3.2"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.0.3"
+    "eslint-config-next": "14.0.3",
+    "typescript": "^5"
   }
 }

@@ -1,0 +1,42 @@
+.scroll-down-container {
+    cursor: pointer;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 33.33%;
+    right: 15%;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: transparent;
+    pointer-events: none;
+    @media (max-width: $layout-breakpoint-small) {
+      top: 50%;
+      right: 10%;
+      width: 200px;
+      height: 200px;
+    }
+    & img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      opacity: 0.5;
+    }
+    .floating-arrow {
+      position: absolute;
+      font-size: 12.5em;
+      font-weight: 100;
+      color: rgba($grey-dark, 0.5);
+      border-radius: 50%; 
+      pointer-events: all;
+      @media (max-width: $layout-breakpoint-small) {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+  }
+
+  

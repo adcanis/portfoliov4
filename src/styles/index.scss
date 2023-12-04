@@ -1,0 +1,33 @@
+// Abstracts
+@import "./abstracts/breakpoints.scss";
+@import "./abstracts/colors.scss";
+@import "./abstracts/mixins.scss";
+
+// Base
+@import "./base/defaults.scss";
+@import "./base/normalize.scss";
+
+// Typeography
+@import "./typography/typography.scss";
+
+// Components
+@import "./components/banner.scss";
+@import "./components/contactCard.scss";
+@import "./components/footer.scss";
+@import "./components/hero.scss";
+@import "./components/loader.scss";
+@import "./components/navbar.scss";
+@import "./components/scrollDownBtn.scss";
+@import "./components/sectionSkeleton.scss";
+
+// Pages
+@import "./pages/home.scss";
+@import "./pages/workItem.scss";
+
+// Sections
+@import "./sections/about.scss";
+@import "./sections/contact.scss";
+@import "./sections/featuredWork.scss";
+@import "./sections/game.scss";
+@import "./sections/recognition.scss";
+@import "./sections/services.scss";

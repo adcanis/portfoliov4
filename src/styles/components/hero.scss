@@ -1,0 +1,44 @@
+.hero-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    min-height: 100vh;
+    height: 100%;
+    top: 0;
+    left: 0;
+    margin-bottom: 100px;
+    overflow: visible;
+    .hero-text {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        right: 100px;
+        pointer-events: none !important;
+        background: transparent;
+        & h1 {
+            font-family: $font-heavy;
+            font-size: 10em;
+            text-transform: uppercase;
+            margin: 0;
+            line-height: 0.75;
+            background: $grey-light;
+            background: linear-gradient(to left, $grey-dark 66%, $grey-light 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: -2px 0 5px $shadow;
+            @media (max-width: $layout-breakpoint-medium) {
+                font-size: 5em;
+                width: 90%;
+              }
+            @media (max-width: $layout-breakpoint-small) {
+                font-size: 3.75em;
+                width: 90%;
+            }
+        }
+    }
+}
