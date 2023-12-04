@@ -47,10 +47,7 @@ export default function App({ Component, pageProps }: AppProps) {
       {!isLoading ? (
         <AnimatePresence mode="wait">
           <motion.div className="App" ref={app} exit={{ opacity: 0 }}>
-            <Navbar
-              setIsShowingContactCard={setIsShowingContactCard}
-              isShowingContactCard={isShowingContactCard}
-            />
+            <Navbar />
             <ContactCard
               isShowingContactCard={isShowingContactCard}
               handleIsOpen={() => setIsShowingContactCard(false)}
