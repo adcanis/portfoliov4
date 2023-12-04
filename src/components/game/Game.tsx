@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { toast } from "react-toastify";
 import * as THREE from "three";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { PerspectiveCamera, CubeCamera, Environment } from "@react-three/drei";
@@ -109,11 +110,24 @@ const GameProgression = ({
 const Game = () => {
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [gameEnded, setGameEnded] = React.useState<boolean>(false);
+  const [isMobile, setIsMobile] = React.useState<boolean>(false);
   const [showInstructions, setShowInstructions] =
     React.useState<boolean>(false);
   const [mousePosition, setMousePosition] = React.useState(
     new THREE.Vector3(0, 0, 0)
   );
+
+  // Detect mobile
+  React.useEffect(() => {
+    const userAgent =
+      typeof window.navigator === "undefined" ? "" : navigator.userAgent;
+    const mobile = Boolean(
+      userAgent.match(
+        /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
+      )
+    );
+    setIsMobile(mobile);
+  }, []);
 
   // ESC key to end game
   React.useEffect(() => {
@@ -141,6 +155,10 @@ const Game = () => {
 
     return () => window.removeEventListener("wheel", preventScroll);
   }, [isPlaying]);
+
+  const handleMobileNotification = () => {
+    toast.info("Uh oh! This game is not available on mobile.");
+  };
 
   const handlePointerMove = (e: any) => {
     const bounds = e.target.getBoundingClientRect();
@@ -234,7 +252,11 @@ const Game = () => {
                 whileInView={{ opacity: 1, z: 0 }}
                 exit={{ opacity: 0, z: -100 }}
                 transition={{ duration: 1, delay: 0.5 }}
-                onClick={() => setShowInstructions(true)}
+                onClick={() =>
+                  isMobile
+                    ? handleMobileNotification()
+                    : setShowInstructions(true)
+                }
               >
                 Play
               </motion.button>
