@@ -18,14 +18,39 @@ interface Laser {
   x: number;
   y: number;
   z: number;
+  range: number;
   velocity: number[];
 }
 
-interface Enemy {
+interface Meteor {
   x: number;
   y: number;
   z: number;
+  type: string;
+  health: number;
 }
+
+interface PowerUp {
+  x: number;
+  y: number;
+  z: number;
+  type: string;
+}
+
+interface LevelConfig {
+  level: number;
+  meteorCount: number;
+  meteorSpeed: number;
+  boss?: {
+    type: string;
+    health: number;
+  };
+}
+
+export const playerHealthState = atom({
+  key: "playerHealth",
+  default: 100,
+});
 
 export const shipPositionState = atom<Ship>({
   key: "shipPosition",
@@ -43,20 +68,21 @@ export const shipPositionState = atom<Ship>({
   },
 });
 
-export const enemyPositionState = atom<Enemy[]>({
-  key: "enempyPosition",
-  default: [
-    { x: -10, y: 10, z: -80 },
-    { x: 20, y: 20, z: -100 },
-  ],
-});
-
 export const laserPositionState = atom<Laser[]>({
   key: "laserPositionState",
   default: [],
 });
 
-// Game progression state
+export const powerUpState = atom<PowerUp[]>({
+  key: "powerUpState",
+  default: [],
+});
+
+export const meteorPositionState = atom<Meteor[]>({
+  key: "meteorPosition",
+  default: [],
+});
+
 export const scoreState = atom({
   key: "score",
   default: 0,
@@ -67,24 +93,31 @@ export const currentLevelState = atom({
   default: 1,
 });
 
-export const levelConfigs = [
-  { level: 1, enemyCount: 5, enemySpeed: 0.1 },
-  { level: 2, enemyCount: 8, enemySpeed: 0.15 },
-  { level: 3, enemyCount: 12, enemySpeed: 0.2 },
+export const levelConfigs: LevelConfig[] = [
+  { level: 1, meteorCount: 5, meteorSpeed: 0.1 },
+  { level: 2, meteorCount: 8, meteorSpeed: 0.15 },
+  {
+    level: 3,
+    meteorCount: 12,
+    meteorSpeed: 0.2,
+    boss: { type: "planetNova", health: 50 },
+  },
 ];
 
-export const generateEnemiesForLevel = (level: number): Enemy[] => {
+export const generateMeteorsForLevel = (level: number): Meteor[] => {
   const config = levelConfigs.find((c) => c.level === level);
   if (!config) return [];
 
-  let enemies = [];
-  for (let i = 0; i < config.enemyCount; i++) {
-    enemies.push({
+  let meteors = [];
+  for (let i = 0; i < config.meteorCount; i++) {
+    meteors.push({
       x: Math.random() * 20 - 10,
       y: Math.random() * 20 - 10,
       z: -100 - Math.random() * 50,
+      type: "enemy",
+      health: 1,
     });
   }
 
-  return enemies;
+  return meteors;
 };

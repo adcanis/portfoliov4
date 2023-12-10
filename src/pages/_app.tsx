@@ -43,6 +43,7 @@ export default function App({ Component, pageProps }: AppProps) {
         newestOnTop={false}
         closeOnClick
         rtl={false}
+        theme="dark"
       />
       {!isLoading ? (
         <AnimatePresence mode="wait">

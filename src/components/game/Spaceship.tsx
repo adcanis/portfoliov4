@@ -6,9 +6,9 @@ import { useRecoilState } from "recoil";
 import { shipPositionState } from "@/components/game/lib/GameContext";
 
 const Spaceship = ({ mousePosition }: { mousePosition: THREE.Vector3 }) => {
-  const [shipPosition, setShipPosition] = useRecoilState(shipPositionState);
-  const gltf = useLoader(GLTFLoader, "/models/spaceship/scene.gltf");
   const spaceshipRef = React.useRef<any>();
+  const gltf = useLoader(GLTFLoader, "/models/spaceship/scene.gltf");
+  const [shipPosition, setShipPosition] = useRecoilState(shipPositionState);
 
   React.useEffect(() => {
     gltf.scene.scale.set(0.1, 0.1, 0.1);
@@ -17,12 +17,12 @@ const Spaceship = ({ mousePosition }: { mousePosition: THREE.Vector3 }) => {
       if (object instanceof THREE.Mesh) {
         object.castShadow = true;
         object.receiveShadow = true;
-        object.material.envMapIntensity = 20;
+        object.material.envMapIntensity = 10;
       }
     });
   }, [gltf]);
 
-  React.useEffect(() => {
+  useFrame(() => {
     setShipPosition({
       position: {
         x: mousePosition.x * 6,
@@ -31,11 +31,11 @@ const Spaceship = ({ mousePosition }: { mousePosition: THREE.Vector3 }) => {
       },
       rotation: {
         z: -mousePosition.x * 0.5,
-        x: -mousePosition.x * 0.5,
-        y: -mousePosition.y * 0.2,
+        x: -mousePosition.x * 0.2,
+        y: -mousePosition.x * 0.1,
       },
     });
-  }, [mousePosition, setShipPosition]);
+  });
 
   useFrame(() => {
     if (spaceshipRef.current) {

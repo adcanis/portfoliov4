@@ -3,106 +3,133 @@ import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import * as THREE from "three";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { PerspectiveCamera, CubeCamera, Environment } from "@react-three/drei";
-import { EffectComposer, Bloom } from "@react-three/postprocessing";
-import { BlendFunction } from "postprocessing";
+import { PerspectiveCamera } from "@react-three/drei";
 import { useRecoilState, RecoilRoot } from "recoil";
 import {
-  enemyPositionState,
-  generateEnemiesForLevel,
+  meteorPositionState,
+  generateMeteorsForLevel,
   laserPositionState,
   currentLevelState,
   scoreState,
+  levelConfigs,
 } from "./lib/GameContext";
 import Spaceship from "./Spaceship";
-import Enemy from "./Enemy";
+import Meteor from "./Meteor";
 import { Lasers, LaserController } from "./Lasers";
 import * as MdIcons from "react-icons/md";
 import * as GiIcons from "react-icons/gi";
+import Target from "./Target";
 
-type GameProgressionProps = {
+type GameControllerProps = {
   isPlaying: boolean;
   hasEnded: boolean;
   setHasEnded: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const LASER_RANGE = 100;
-const LASER_Z_VELOCITY = 1;
-const ENEMY_SPEED = 0.1;
-const GROUND_HEIGHT = -50;
-
-const GameProgression = ({
+const GameController = ({
   isPlaying,
   hasEnded,
   setHasEnded,
-}: GameProgressionProps) => {
+}: GameControllerProps) => {
   const [currentLevel, setCurrentLevel] = useRecoilState(currentLevelState);
-  const [enemies, setEnemies] = useRecoilState(enemyPositionState);
+  const [meteors, setMeteors] = useRecoilState(meteorPositionState);
   const [lasers, setLaserPositions] = useRecoilState(laserPositionState);
   const [score, setScore] = useRecoilState(scoreState);
 
-  const laserDistance = (p1: any, p2: any) => {
-    const a = p2.x - p1.x;
-    const b = p2.y - p1.y;
-    const c = p2.z - p1.z;
+  // Load level configs and set current level
+  const currentLevelConfig = levelConfigs.find(
+    (config) => config.level === currentLevel
+  );
 
-    return Math.sqrt(a * a + b * b + c * c);
+  const calculateLaserDistance = (laser: any, meteor: any) => {
+    const dx = meteor.x - laser.x;
+    const dy = meteor.y - laser.y;
+    const dz = meteor.z - laser.z;
+    return Math.sqrt(dx * dx + dy * dy + dz * dz);
   };
 
-  useFrame(() => {
-    let hitEnemyIndexes = new Set();
+  // Generate meteors when game starts
+  React.useEffect(() => {
+    if (isPlaying && meteors.length === 0) {
+      setMeteors(generateMeteorsForLevel(currentLevel));
+      setCurrentLevel((prevLevel) => prevLevel + 1);
+    }
+  }, [isPlaying, meteors, setMeteors, currentLevel, setCurrentLevel]);
 
+  // Reset game when game ends
+  React.useEffect(() => {
+    if (hasEnded) {
+      setMeteors([]);
+      setLaserPositions([]);
+      setScore(0);
+      setCurrentLevel(1);
+    }
+  }, [hasEnded, setMeteors, setLaserPositions, setScore, setCurrentLevel]);
+
+  useFrame(() => {
+    if (!isPlaying) return;
+
+    const hitMeteorIndex = new Set();
+    const meteorSpeed = currentLevelConfig
+      ? currentLevelConfig.meteorSpeed
+      : 0.1;
+
+    // Check if laser hits meteor
     lasers.forEach((laser, laserIndex) => {
-      enemies.forEach((enemy, enemyIndex) => {
-        if (laserDistance(laser, enemy) < 3) {
-          hitEnemyIndexes.add(enemyIndex);
-          setLaserPositions(lasers.filter((_, idx) => idx !== laserIndex));
+      meteors.forEach((meteor, meteorIndex) => {
+        if (calculateLaserDistance(laser, meteor) < 3) {
+          console.log(
+            `Laser hit meteor: Laser ID ${laser.id}, Meteor Index ${meteorIndex}`
+          );
+          hitMeteorIndex.add(meteorIndex);
+          setLaserPositions((prevLasers) =>
+            prevLasers.filter((_, idx) => idx !== laserIndex)
+          );
         }
       });
     });
 
-    if (hitEnemyIndexes.size > 0) {
-      setScore((score) => score + hitEnemyIndexes.size);
-      console.log("hit detected");
-      setEnemies(enemies.filter((_, idx) => !hitEnemyIndexes.has(idx)));
+    // Remove hit meteors and update score
+    if (hitMeteorIndex.size > 0) {
+      setScore((prevScore) => prevScore + hitMeteorIndex.size);
+      setMeteors((prevMeteor) =>
+        prevMeteor.filter((_, idx) => !hitMeteorIndex.has(idx))
+      );
     }
 
-    setEnemies(
-      enemies.map((enemy) => ({
-        ...enemy,
-        z: enemy.z + ENEMY_SPEED,
+    // Move meteors
+    setMeteors((prevMeteor) =>
+      prevMeteor.map((meteor) => ({
+        ...meteor,
+        z: meteor.z + meteorSpeed,
       }))
     );
 
+    // Move lasers
     setLaserPositions(
-      lasers
-        .map((laser) => ({
-          ...laser,
-          x: laser.x + laser.velocity[0],
-          y: laser.y + laser.velocity[1],
-          z: laser.z + LASER_Z_VELOCITY,
-        }))
-        .filter((laser) => laser.z > -LASER_RANGE && laser.y > GROUND_HEIGHT)
+      (prevLasers) =>
+        prevLasers
+          .map((laser) => ({
+            ...laser,
+            id: laser.id,
+            x: laser.x + laser.velocity[0],
+            y: laser.y + laser.velocity[1],
+            z: laser.z + laser.velocity[1],
+            velocity: laser.velocity,
+          }))
+          .filter((laser) => laser.z > -laser.range && laser.y > -50) // ground height
     );
 
-    if (enemies.length === 0) {
+    if (meteors.length === 0) {
       const nextLevel = currentLevel + 1;
       if (nextLevel <= 3) {
         setCurrentLevel(nextLevel);
-        setEnemies(generateEnemiesForLevel(nextLevel));
+        setMeteors(generateMeteorsForLevel(nextLevel));
       } else {
         setHasEnded(true);
       }
     }
   });
-
-  React.useEffect(() => {
-    if (!isPlaying) return;
-    if (enemies.length === 0) {
-      setEnemies(generateEnemiesForLevel(currentLevel));
-      setCurrentLevel(currentLevel + 1);
-    }
-  }, [isPlaying, enemies, setEnemies, currentLevel, setCurrentLevel]);
 
   return null;
 };
@@ -185,21 +212,20 @@ const Game = () => {
               }}
             >
               <PerspectiveCamera makeDefault fov={50} position={[3, 2, 5]} />
-              <CubeCamera resolution={256} frames={Infinity}>
-                {(texture) => (
-                  <>
-                    <Environment map={texture} />
-                    <Spaceship mousePosition={mousePosition} />
-                    <Enemy />
-                    <Lasers />
-                    <LaserController />
-                  </>
-                )}
-              </CubeCamera>
+              <Target mousePosition={mousePosition} />
+              <Spaceship mousePosition={mousePosition} />
+              <Meteor />
+              <Lasers />
+              <LaserController mousePosition={mousePosition} />
+              <GameController
+                isPlaying={isPlaying}
+                hasEnded={gameEnded}
+                setHasEnded={setGameEnded}
+              />
               <directionalLight
                 castShadow
                 color={"#889293"}
-                intensity={2}
+                intensity={5}
                 position={[10, 5, 4]}
                 shadow-bias={-0.0005}
                 shadow-mapSize-width={1024}
@@ -210,22 +236,6 @@ const Game = () => {
                 shadow-camera-bottom={-6}
                 shadow-camera-left={-6.2}
                 shadow-camera-right={6.4}
-              />
-              <EffectComposer>
-                <Bloom
-                  blendFunction={BlendFunction.ADD}
-                  intensity={1.5}
-                  width={300}
-                  height={300}
-                  kernelSize={5}
-                  luminanceThreshold={0.15}
-                  luminanceSmoothing={0.025}
-                />
-              </EffectComposer>
-              <GameProgression
-                isPlaying={isPlaying}
-                hasEnded={gameEnded}
-                setHasEnded={setGameEnded}
               />
             </Canvas>
           </RecoilRoot>
@@ -274,7 +284,7 @@ const Game = () => {
                 }}
               >
                 Use your <MdIcons.MdOutlineMouse /> to move the spaceship and{" "}
-                <MdIcons.MdSpaceBar /> to shoot.
+                left-click to shoot.
                 <br />
                 <br />
                 Press <span>ESC</span> to end the game.
