@@ -15,7 +15,7 @@ const ScrollDownBtn = () => {
 
   const handleScroll = () => {
     window.scrollTo({
-      top: window.innerHeight + 350,
+      top: window.innerHeight + 750,
       behavior: "smooth",
     });
   };

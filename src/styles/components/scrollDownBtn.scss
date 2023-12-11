@@ -25,9 +25,9 @@
     }
     .floating-arrow {
       position: absolute;
-      font-size: 12.5em;
+      font-size: 10em;
       font-weight: 100;
-      color: rgba($grey-dark, 0.5);
+      color: rgba($grey-dark, 0.33);
       border-radius: 50%; 
       pointer-events: all;
       @media (max-width: $layout-breakpoint-small) {

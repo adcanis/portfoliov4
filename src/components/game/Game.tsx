@@ -16,18 +16,22 @@ import {
 import Spaceship from "./Spaceship";
 import Meteor from "./Meteor";
 import { Lasers, LaserController } from "./Lasers";
+import Target from "./Target";
 import * as MdIcons from "react-icons/md";
 import * as GiIcons from "react-icons/gi";
-import Target from "./Target";
 
 type GameControllerProps = {
   isPlaying: boolean;
+  setDisplayedScore: React.Dispatch<React.SetStateAction<number>>;
+  setDisplayedLevel: React.Dispatch<React.SetStateAction<number>>;
   hasEnded: boolean;
   setHasEnded: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const GameController = ({
   isPlaying,
+  setDisplayedScore,
+  setDisplayedLevel,
   hasEnded,
   setHasEnded,
 }: GameControllerProps) => {
@@ -65,6 +69,13 @@ const GameController = ({
       setCurrentLevel(1);
     }
   }, [hasEnded, setMeteors, setLaserPositions, setScore, setCurrentLevel]);
+
+  // update displayed score
+  React.useEffect(() => {
+    if (score) {
+      setDisplayedScore(score);
+    }
+  }, [score, setDisplayedScore]);
 
   useFrame(() => {
     if (!isPlaying) return;
@@ -124,6 +135,7 @@ const GameController = ({
       const nextLevel = currentLevel + 1;
       if (nextLevel <= 3) {
         setCurrentLevel(nextLevel);
+        setDisplayedLevel(nextLevel);
         setMeteors(generateMeteorsForLevel(nextLevel));
       } else {
         setHasEnded(true);
@@ -137,6 +149,8 @@ const GameController = ({
 const Game = () => {
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [gameEnded, setGameEnded] = React.useState<boolean>(false);
+  const [displayedScore, setDisplayedScore] = React.useState<number>(0);
+  const [displayedLevel, setDisplayedLevel] = React.useState<number>(1);
   const [isMobile, setIsMobile] = React.useState<boolean>(false);
   const [showInstructions, setShowInstructions] =
     React.useState<boolean>(false);
@@ -221,6 +235,8 @@ const Game = () => {
                 isPlaying={isPlaying}
                 hasEnded={gameEnded}
                 setHasEnded={setGameEnded}
+                setDisplayedScore={setDisplayedScore}
+                setDisplayedLevel={setDisplayedLevel}
               />
               <directionalLight
                 castShadow
@@ -239,6 +255,16 @@ const Game = () => {
               />
             </Canvas>
           </RecoilRoot>
+          <motion.div className="game-hud">
+            <div className="score">
+              <span>Score</span>
+              <span>{displayedScore}</span>
+            </div>
+            <div className="level">
+              <span>Level</span>
+              <span>{displayedLevel}</span>
+            </div>
+          </motion.div>
         </React.Suspense>
       ) : (
         <div className="game-start">

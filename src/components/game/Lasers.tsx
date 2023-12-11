@@ -50,7 +50,7 @@ export const LaserController = ({
       x: laserOffset.x,
       y: laserOffset.y,
       z: laserOffset.z,
-      range: 500,
+      range: 1000,
       velocity: [laserDirection.x, laserDirection.y, laserDirection.z],
     };
 
