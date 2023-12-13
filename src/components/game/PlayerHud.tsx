@@ -9,11 +9,22 @@ type PlayerHudProps = {
 };
 
 const PlayerHud = ({ score, level }: PlayerHudProps) => {
+  const [healthBarHeight, setHealthBarHeight] = React.useState<string>("");
+  const [thrusterBarHeight, setThrusterBarHeight] = React.useState<string>("");
   const [playerHealth] = useRecoilState(playerHealthState);
   const [isBoosting] = useRecoilState(isBoostingState);
 
-  const healthBarHeight = `${playerHealth}%`;
-  const thrusterBarHeight = `${isBoosting ? 100 : 0}%`;
+  React.useEffect(() => {
+    setHealthBarHeight(`${playerHealth}px`);
+  }, [playerHealth]);
+
+  React.useEffect(() => {
+    if (isBoosting) {
+      setThrusterBarHeight("0px");
+    } else {
+      setTimeout(() => setThrusterBarHeight("100px"), 5000);
+    }
+  }, [isBoosting]);
 
   return (
     <motion.div
@@ -23,26 +34,6 @@ const PlayerHud = ({ score, level }: PlayerHudProps) => {
       exit={{ opacity: 0, z: -100 }}
       transition={{ duration: 1, delay: 0.75 }}
     >
-      <div className="bar-container">
-        <div className="bar">
-          <h3>Shields</h3>
-          <motion.div
-            className="bar-fill health"
-            initial={{ height: "100%" }}
-            animate={{ height: healthBarHeight }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-          />
-        </div>
-        <div className="bar">
-          <h3>Thrusters</h3>
-          <motion.div
-            className="bar-fill"
-            initial={{ height: "100%" }}
-            animate={{ height: thrusterBarHeight }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-          />
-        </div>
-      </div>
       <div className="game-prog-container">
         <div className="level-indicator">
           <h3>
@@ -53,6 +44,33 @@ const PlayerHud = ({ score, level }: PlayerHudProps) => {
           <h3>
             Score: <span>{score}</span>
           </h3>
+        </div>
+      </div>
+      <div className="bar-container">
+        <div className="bar-item">
+          <div className="bar">
+            <motion.div
+              className="bar-fill health"
+              initial={{ height: healthBarHeight }}
+              animate={{ height: healthBarHeight }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            />
+          </div>
+          <h3>Shields</h3>
+        </div>
+        <div className="bar-item">
+          <div className="bar">
+            <motion.div
+              className="bar-fill"
+              initial={{ height: thrusterBarHeight }}
+              animate={{ height: thrusterBarHeight }}
+              transition={{
+                duration: 1.5,
+                ease: "easeInOut",
+              }}
+            />
+          </div>
+          <h3>Thrusters</h3>
         </div>
       </div>
     </motion.div>
