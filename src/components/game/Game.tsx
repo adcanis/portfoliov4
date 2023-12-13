@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import * as THREE from "three";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { PerspectiveCamera } from "@react-three/drei";
+import { EffectComposer } from "@react-three/postprocessing";
 import { useRecoilState, RecoilRoot } from "recoil";
 import {
   meteorPositionState,
@@ -12,11 +13,14 @@ import {
   currentLevelState,
   scoreState,
   levelConfigs,
+  isBoostingState,
 } from "./lib/GameContext";
+import PowerBoost from "./lib/PowerBoost";
 import Spaceship from "./Spaceship";
 import Meteor from "./Meteor";
 import { Lasers, LaserController } from "./Lasers";
 import Target from "./Target";
+import PlayerHud from "./PlayerHud";
 import * as MdIcons from "react-icons/md";
 import * as GiIcons from "react-icons/gi";
 
@@ -35,10 +39,12 @@ const GameController = ({
   hasEnded,
   setHasEnded,
 }: GameControllerProps) => {
+  const boostTimeoutRef = React.useRef<any>();
   const [currentLevel, setCurrentLevel] = useRecoilState(currentLevelState);
   const [meteors, setMeteors] = useRecoilState(meteorPositionState);
   const [lasers, setLaserPositions] = useRecoilState(laserPositionState);
   const [score, setScore] = useRecoilState(scoreState);
+  const [isBoosting, setIsBoosting] = useRecoilState(isBoostingState);
 
   // Load level configs and set current level
   const currentLevelConfig = levelConfigs.find(
@@ -81,9 +87,20 @@ const GameController = ({
     if (!isPlaying) return;
 
     const hitMeteorIndex = new Set();
-    const meteorSpeed = currentLevelConfig
+    const normalMeteorSpeed = currentLevelConfig
       ? currentLevelConfig.meteorSpeed
       : 0.1;
+    const boostedMeteorSpeed = 0.5;
+
+    const meteorSpeed = isBoosting ? boostedMeteorSpeed : normalMeteorSpeed;
+
+    // Move meteors
+    setMeteors((prevMeteor) =>
+      prevMeteor.map((meteor) => ({
+        ...meteor,
+        z: meteor.z + meteorSpeed,
+      }))
+    );
 
     // Check if laser hits meteor
     lasers.forEach((laser, laserIndex) => {
@@ -108,14 +125,6 @@ const GameController = ({
       );
     }
 
-    // Move meteors
-    setMeteors((prevMeteor) =>
-      prevMeteor.map((meteor) => ({
-        ...meteor,
-        z: meteor.z + meteorSpeed,
-      }))
-    );
-
     // Move lasers
     setLaserPositions(
       (prevLasers) =>
@@ -125,12 +134,13 @@ const GameController = ({
             id: laser.id,
             x: laser.x + laser.velocity[0],
             y: laser.y + laser.velocity[1],
-            z: laser.z + laser.velocity[1],
+            z: laser.z - laser.velocity[2],
             velocity: laser.velocity,
           }))
           .filter((laser) => laser.z > -laser.range && laser.y > -50) // ground height
     );
 
+    // Handle level progression
     if (meteors.length === 0) {
       const nextLevel = currentLevel + 1;
       if (nextLevel <= 3) {
@@ -253,18 +263,12 @@ const Game = () => {
                 shadow-camera-left={-6.2}
                 shadow-camera-right={6.4}
               />
+              <EffectComposer>
+                <PowerBoost />
+              </EffectComposer>
             </Canvas>
+            <PlayerHud score={displayedScore} level={displayedLevel} />
           </RecoilRoot>
-          <motion.div className="game-hud">
-            <div className="score">
-              <span>Score</span>
-              <span>{displayedScore}</span>
-            </div>
-            <div className="level">
-              <span>Level</span>
-              <span>{displayedLevel}</span>
-            </div>
-          </motion.div>
         </React.Suspense>
       ) : (
         <div className="game-start">
@@ -309,9 +313,11 @@ const Game = () => {
                   y: { type: "spring", stiffness: 100, damping: 10 },
                 }}
               >
-                Use your <MdIcons.MdOutlineMouse /> to move the spaceship and{" "}
-                left-click to shoot.
+                Use your <MdIcons.MdOutlineMouse /> to move the spaceship
                 <br />
+                Left-Click to shoot
+                <br />
+                Spacebar to boost.
                 <br />
                 Press <span>ESC</span> to end the game.
               </motion.p>

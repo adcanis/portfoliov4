@@ -73,6 +73,11 @@ export const laserPositionState = atom<Laser[]>({
   default: [],
 });
 
+export const isBoostingState = atom({
+  key: "isBoosting",
+  default: false,
+});
+
 export const powerUpState = atom<PowerUp[]>({
   key: "powerUpState",
   default: [],

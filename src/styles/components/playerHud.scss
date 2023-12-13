@@ -1,0 +1,63 @@
+.player-hud {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 360px;
+    height: fit-content;
+    left: 25px;
+    bottom: 50px;
+    pointer-events: none;
+    z-index: 500;
+    .bar-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 10px;
+        align-items: center;
+        .bar {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            .bar-fill {
+                width: 25px;
+                height: 0;
+                min-height: 200px;
+                background-color: $yellow-dark;
+                border-radius: 5px;
+                &.health {
+                    background-color: $grey-dark;
+                }
+            }
+            & h3 {
+                font-size: 1.5em;
+                color: $text-light;
+                text-wrap: nowrap;
+                margin: 0;
+            }
+        }
+    }
+    .game-prog-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 10px;
+        align-items: center;
+        .level-indicator,
+        .score-indicator {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: auto;
+            & h3 {
+                font-size: 1.5em;
+                color: $text-light;
+                text-wrap: nowrap;
+                margin: 0;
+                & span {
+                    color: $yellow-dark;
+                    margin-left: 5px;
+                }
+            }
+        }
+    }
+}
