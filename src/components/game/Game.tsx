@@ -87,28 +87,28 @@ const GameController = ({
       });
 
       // randomize enemy movement
-      const speed = Math.random() * 0.1 + 0.05;
+      const speed = Math.random() * 0.2 + 0.1;
+      const amplitude = Math.random() * 5 + 2;
       const direction = Math.random() < 0.5 ? 1 : -1;
       const movementType = Math.random();
       let deltaX = 0;
       let deltaY = 0;
+      let deltaZ = 0;
 
       if (movementType < 0.3) {
         deltaX = speed * direction;
       } else if (movementType < 0.6) {
-        const zigzagSpeed = speed * 2;
-        deltaX = Math.sin(Date.now() * 0.001 + index) * zigzagSpeed;
-        deltaY = Math.cos(Date.now() * 0.001 + index) * zigzagSpeed;
+        deltaX = Math.sin(Date.now() * 0.001 + index) * amplitude;
+        deltaY = Math.cos(Date.now() * 0.001 + index) * amplitude;
       } else {
         deltaX = (Math.random() - 0.5) * speed;
         deltaY = (Math.random() - 0.5) * speed;
+        deltaZ = (Math.random() - 0.5) * speed;
       }
 
       return {
         ...enemy,
-        z:
-          enemy.z +
-          Math.sin(Date.now() * 0.001 + index) * 0.1 * enemySpeedMultiplier,
+        z: enemy.z + deltaZ,
         x: enemy.x + deltaX,
         y: enemy.y + deltaY,
       };
