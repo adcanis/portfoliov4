@@ -53,9 +53,9 @@ const ScrollDownBtn = () => {
           />
           <motion.div
             className="floating-arrow"
-            initial={{ opacity: 0, y: -100 }}
+            initial={{ opacity: 0.25, y: -100 }}
             animate={{ opacity: 0.75, y: 100 }}
-            exit={{ opacity: 0, y: 100 }}
+            exit={{ opacity: 0.25, y: 100 }}
             transition={{
               duration: 2,
               ease: "easeInOut",

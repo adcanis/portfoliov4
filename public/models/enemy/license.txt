@@ -1,0 +1,11 @@
+Model Information:
+* title:	Federation Attack Fighter
+* source:	https://sketchfab.com/3d-models/federation-attack-fighter-e8a4ee7b6a7d43218bfad55b64030ff0
+* author:	Hangar.b.productions (https://sketchfab.com/hangar.b.productions)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Federation Attack Fighter" (https://sketchfab.com/3d-models/federation-attack-fighter-e8a4ee7b6a7d43218bfad55b64030ff0) by Hangar.b.productions (https://sketchfab.com/hangar.b.productions) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -1,4 +1,5 @@
 import { atom } from "recoil";
+import { v4 as uuidv4 } from "uuid";
 
 interface Ship {
   position: {
@@ -18,16 +19,27 @@ interface Laser {
   x: number;
   y: number;
   z: number;
+  opacity?: number;
   range: number;
   velocity: number[];
 }
 
-interface Meteor {
+interface EnemyShip {
+  id: string;
   x: number;
   y: number;
   z: number;
-  type: string;
   health: number;
+}
+
+interface EnemyLaser {
+  id: string;
+  x: number;
+  y: number;
+  z: number;
+  opacity?: number;
+  range: number;
+  velocity: number[];
 }
 
 interface PowerUp {
@@ -41,10 +53,6 @@ interface LevelConfig {
   level: number;
   meteorCount: number;
   meteorSpeed: number;
-  boss?: {
-    type: string;
-    health: number;
-  };
 }
 
 export const playerHealthState = atom({
@@ -83,8 +91,13 @@ export const powerUpState = atom<PowerUp[]>({
   default: [],
 });
 
-export const meteorPositionState = atom<Meteor[]>({
-  key: "meteorPosition",
+export const enemyShipPositionState = atom<EnemyShip[]>({
+  key: "enemyShipPositionState",
+  default: [],
+});
+
+export const enemyLaserState = atom<EnemyLaser[]>({
+  key: "enemyLaserState",
   default: [],
 });
 
@@ -99,30 +112,45 @@ export const currentLevelState = atom({
 });
 
 export const levelConfigs: LevelConfig[] = [
-  { level: 1, meteorCount: 5, meteorSpeed: 0.1 },
-  { level: 2, meteorCount: 8, meteorSpeed: 0.15 },
+  { level: 1, meteorCount: 1, meteorSpeed: 0.1 },
+  { level: 2, meteorCount: 3, meteorSpeed: 0.15 },
   {
     level: 3,
-    meteorCount: 12,
-    meteorSpeed: 0.2,
-    boss: { type: "planetNova", health: 50 },
+    meteorCount: 5,
+    meteorSpeed: 1,
   },
 ];
 
-export const generateMeteorsForLevel = (level: number): Meteor[] => {
-  const config = levelConfigs.find((c) => c.level === level);
-  if (!config) return [];
+export const calculateDynamicHitDistance = (isBoosting: boolean) => {
+  const baseHitDistance = 25;
+  const boostMultiplier = isBoosting ? 1.5 : 1;
 
-  let meteors = [];
-  for (let i = 0; i < config.meteorCount; i++) {
-    meteors.push({
-      x: Math.random() * 20 - 10,
-      y: Math.random() * 20 - 10,
+  return baseHitDistance * boostMultiplier;
+};
+
+let isFirstGeneration = true;
+
+export const generateEnemies = (): EnemyShip[] => {
+  let numberOfEnemies;
+
+  if (isFirstGeneration) {
+    // Generate a 1 enemy for the first generation
+    numberOfEnemies = Math.floor(Math.random() * 1) + 1;
+    isFirstGeneration = false;
+  } else {
+    numberOfEnemies = 3;
+  }
+
+  let newEnemies: EnemyShip[] = [];
+  for (let i = 0; i < numberOfEnemies; i++) {
+    newEnemies.push({
+      id: uuidv4(),
+      x: Math.random() * 50 - 10,
+      y: Math.random() * 50 - 10,
       z: -100 - Math.random() * 50,
-      type: "enemy",
-      health: 1,
+      health: 100,
     });
   }
 
-  return meteors;
+  return newEnemies;
 };

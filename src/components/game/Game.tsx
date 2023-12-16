@@ -7,149 +7,149 @@ import { PerspectiveCamera } from "@react-three/drei";
 import { EffectComposer } from "@react-three/postprocessing";
 import { useRecoilState, RecoilRoot } from "recoil";
 import {
-  meteorPositionState,
-  generateMeteorsForLevel,
+  generateEnemies,
+  calculateDynamicHitDistance,
+  enemyShipPositionState,
   laserPositionState,
-  currentLevelState,
   scoreState,
-  levelConfigs,
   isBoostingState,
 } from "./lib/GameContext";
+import { CalculateLaserDistance } from "./lib/CalculateLaserDistance";
 import PowerBoost from "./lib/PowerBoost";
 import Spaceship from "./Spaceship";
-import Meteor from "./Meteor";
+import EnemyShip from "./EnemyShip";
 import { Lasers, LaserController } from "./Lasers";
 import Target from "./Target";
 import PlayerHud from "./PlayerHud";
 import * as MdIcons from "react-icons/md";
 import * as GiIcons from "react-icons/gi";
+import EnemyLasers, { EnemyLaserController } from "./EnemyLasers";
 
 type GameControllerProps = {
   isPlaying: boolean;
-  setDisplayedScore: React.Dispatch<React.SetStateAction<number>>;
-  setDisplayedLevel: React.Dispatch<React.SetStateAction<number>>;
+  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
   hasEnded: boolean;
   setHasEnded: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const GameController = ({
   isPlaying,
-  setDisplayedScore,
-  setDisplayedLevel,
+  setIsPlaying,
   hasEnded,
   setHasEnded,
 }: GameControllerProps) => {
-  const boostTimeoutRef = React.useRef<any>();
-  const [currentLevel, setCurrentLevel] = useRecoilState(currentLevelState);
-  const [meteors, setMeteors] = useRecoilState(meteorPositionState);
+  const [enemyShips, setEnemyShips] = useRecoilState(enemyShipPositionState);
   const [lasers, setLaserPositions] = useRecoilState(laserPositionState);
   const [score, setScore] = useRecoilState(scoreState);
   const [isBoosting, setIsBoosting] = useRecoilState(isBoostingState);
 
-  // Load level configs and set current level
-  const currentLevelConfig = levelConfigs.find(
-    (config) => config.level === currentLevel
-  );
-
-  const calculateLaserDistance = (laser: any, meteor: any) => {
-    const dx = meteor.x - laser.x;
-    const dy = meteor.y - laser.y;
-    const dz = meteor.z - laser.z;
-    return Math.sqrt(dx * dx + dy * dy + dz * dz);
-  };
-
-  // Generate meteors when game starts
+  // Generate enemyShips when all are defeated
   React.useEffect(() => {
-    if (isPlaying && meteors.length === 0) {
-      setMeteors(generateMeteorsForLevel(currentLevel));
-      setCurrentLevel((prevLevel) => prevLevel + 1);
+    if (isPlaying && enemyShips.length === 0) {
+      setEnemyShips(generateEnemies());
     }
-  }, [isPlaying, meteors, setMeteors, currentLevel, setCurrentLevel]);
+  }, [isPlaying, enemyShips, setEnemyShips]);
 
   // Reset game when game ends
   React.useEffect(() => {
     if (hasEnded) {
-      setMeteors([]);
+      setEnemyShips([]);
       setLaserPositions([]);
-      setScore(0);
-      setCurrentLevel(1);
     }
-  }, [hasEnded, setMeteors, setLaserPositions, setScore, setCurrentLevel]);
-
-  // update displayed score
-  React.useEffect(() => {
-    if (score) {
-      setDisplayedScore(score);
-    }
-  }, [score, setDisplayedScore]);
+  }, [hasEnded, setEnemyShips, setLaserPositions, setScore]);
 
   useFrame(() => {
     if (!isPlaying) return;
 
-    const hitMeteorIndex = new Set();
-    const normalMeteorSpeed = currentLevelConfig
-      ? currentLevelConfig.meteorSpeed
-      : 0.1;
-    const boostedMeteorSpeed = 0.5;
+    // Adjust enemy movement based on boosting
+    const enemySpeedMultiplier = isBoosting ? 5 : 1;
 
-    const meteorSpeed = isBoosting ? boostedMeteorSpeed : normalMeteorSpeed;
+    // Evasive maneuvers
+    const evasiveDistance = 0.5;
+    const evasionMultiplier = 1;
 
-    // Move meteors
-    setMeteors((prevMeteor) =>
-      prevMeteor.map((meteor) => ({
-        ...meteor,
-        z: meteor.z + meteorSpeed,
-      }))
-    );
+    const updatedEnemyShips = enemyShips.map((enemy, index) => {
+      const time = Date.now() * 0.001 + index;
+      let evasionVector = new THREE.Vector3(0, 0, 0);
 
-    // Check if laser hits meteor
-    lasers.forEach((laser, laserIndex) => {
-      meteors.forEach((meteor, meteorIndex) => {
-        if (calculateLaserDistance(laser, meteor) < 3) {
-          console.log(
-            `Laser hit meteor: Laser ID ${laser.id}, Meteor Index ${meteorIndex}`
-          );
-          hitMeteorIndex.add(meteorIndex);
-          setLaserPositions((prevLasers) =>
-            prevLasers.filter((_, idx) => idx !== laserIndex)
-          );
+      // Calculate evasion vector
+      lasers.forEach((laser: any) => {
+        const distance = CalculateLaserDistance(laser, enemy);
+        if (distance < evasiveDistance) {
+          const direction = new THREE.Vector3(
+            enemy.x - laser.x,
+            enemy.y - laser.y,
+            enemy.z - laser.z
+          ).normalize();
+          const evasion = direction.multiplyScalar(evasionMultiplier);
+          evasionVector.add(evasion);
+        }
+      });
+
+      // randomize enemy movement
+      const speed = Math.random() * 0.1 + 0.05;
+      const direction = Math.random() < 0.5 ? 1 : -1;
+      const movementType = Math.random();
+      let deltaX = 0;
+      let deltaY = 0;
+
+      if (movementType < 0.3) {
+        deltaX = speed * direction;
+      } else if (movementType < 0.6) {
+        const zigzagSpeed = speed * 2;
+        deltaX = Math.sin(Date.now() * 0.001 + index) * zigzagSpeed;
+        deltaY = Math.cos(Date.now() * 0.001 + index) * zigzagSpeed;
+      } else {
+        deltaX = (Math.random() - 0.5) * speed;
+        deltaY = (Math.random() - 0.5) * speed;
+      }
+
+      return {
+        ...enemy,
+        z:
+          enemy.z +
+          Math.sin(Date.now() * 0.001 + index) * 0.1 * enemySpeedMultiplier,
+        x: enemy.x + deltaX,
+        y: enemy.y + deltaY,
+      };
+    });
+    setEnemyShips(updatedEnemyShips);
+
+    // Handle laser movement and collision detection
+    const updatedLasers = lasers.map((laser) => ({
+      ...laser,
+      x: laser.x + laser.velocity[0],
+      y: laser.y + laser.velocity[1],
+      z: laser.z - laser.velocity[2],
+    }));
+
+    // Check for hits
+    const hitEnemyIndices = new Set();
+    updatedLasers.forEach((laser) => {
+      enemyShips.forEach((enemy, index) => {
+        if (
+          CalculateLaserDistance(laser, enemy) <
+          calculateDynamicHitDistance(isBoosting)
+        ) {
+          hitEnemyIndices.add(index);
+          setScore((prevScore) => prevScore + 1);
         }
       });
     });
 
-    // Remove hit meteors and update score
-    if (hitMeteorIndex.size > 0) {
-      setScore((prevScore) => prevScore + hitMeteorIndex.size);
-      setMeteors((prevMeteor) =>
-        prevMeteor.filter((_, idx) => !hitMeteorIndex.has(idx))
+    // Remove hit enemies and update lasers
+    if (hitEnemyIndices.size > 0) {
+      setEnemyShips(
+        enemyShips.filter((_, index) => !hitEnemyIndices.has(index))
       );
     }
-
-    // Move lasers
     setLaserPositions(
-      (prevLasers) =>
-        prevLasers
-          .map((laser) => ({
-            ...laser,
-            id: laser.id,
-            x: laser.x + laser.velocity[0],
-            y: laser.y + laser.velocity[1],
-            z: laser.z - laser.velocity[2],
-            velocity: laser.velocity,
-          }))
-          .filter((laser) => laser.z > -laser.range && laser.y > -50) // ground height
+      updatedLasers.filter((laser) => laser.z > -laser.range && laser.y > -50)
     );
 
-    // Handle level progression
-    if (meteors.length === 0) {
-      const nextLevel = currentLevel + 1;
-      if (nextLevel <= 3) {
-        setCurrentLevel(nextLevel);
-        setDisplayedLevel(nextLevel);
-        setMeteors(generateMeteorsForLevel(nextLevel));
-      } else {
-        setHasEnded(true);
-      }
+    // Generate new enemies if all are defeated
+    if (enemyShips.length === 0) {
+      setEnemyShips(generateEnemies());
     }
   });
 
@@ -159,8 +159,6 @@ const GameController = ({
 const Game = () => {
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [gameEnded, setGameEnded] = React.useState<boolean>(false);
-  const [displayedScore, setDisplayedScore] = React.useState<number>(0);
-  const [displayedLevel, setDisplayedLevel] = React.useState<number>(1);
   const [isMobile, setIsMobile] = React.useState<boolean>(false);
   const [showInstructions, setShowInstructions] =
     React.useState<boolean>(false);
@@ -236,18 +234,19 @@ const Game = () => {
               }}
             >
               <PerspectiveCamera makeDefault fov={50} position={[3, 2, 5]} />
-              <Target mousePosition={mousePosition} />
-              <Spaceship mousePosition={mousePosition} />
-              <Meteor />
-              <Lasers />
-              <LaserController mousePosition={mousePosition} />
               <GameController
                 isPlaying={isPlaying}
+                setIsPlaying={setIsPlaying}
                 hasEnded={gameEnded}
                 setHasEnded={setGameEnded}
-                setDisplayedScore={setDisplayedScore}
-                setDisplayedLevel={setDisplayedLevel}
               />
+              <EnemyShip />
+              <EnemyLasers />
+              <EnemyLaserController />
+              <Target mousePosition={mousePosition} />
+              <Spaceship mousePosition={mousePosition} />
+              <Lasers />
+              <LaserController mousePosition={mousePosition} />
               <directionalLight
                 castShadow
                 color={"#889293"}
@@ -267,7 +266,7 @@ const Game = () => {
                 <PowerBoost />
               </EffectComposer>
             </Canvas>
-            <PlayerHud score={displayedScore} level={displayedLevel} />
+            <PlayerHud />
           </RecoilRoot>
         </React.Suspense>
       ) : (

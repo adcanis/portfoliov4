@@ -1,18 +1,18 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useRecoilState } from "recoil";
-import { playerHealthState, isBoostingState } from "./lib/GameContext";
+import {
+  playerHealthState,
+  isBoostingState,
+  scoreState,
+} from "./lib/GameContext";
 
-type PlayerHudProps = {
-  score: number;
-  level: number;
-};
-
-const PlayerHud = ({ score, level }: PlayerHudProps) => {
+const PlayerHud = () => {
   const [healthBarHeight, setHealthBarHeight] = React.useState<string>("");
   const [thrusterBarHeight, setThrusterBarHeight] = React.useState<string>("");
   const [playerHealth] = useRecoilState(playerHealthState);
   const [isBoosting] = useRecoilState(isBoostingState);
+  const [score] = useRecoilState(scoreState);
 
   React.useEffect(() => {
     setHealthBarHeight(`${playerHealth}px`);
@@ -22,7 +22,7 @@ const PlayerHud = ({ score, level }: PlayerHudProps) => {
     if (isBoosting) {
       setThrusterBarHeight("0px");
     } else {
-      setTimeout(() => setThrusterBarHeight("100px"), 5000);
+      setTimeout(() => setThrusterBarHeight("100px"), 3500);
     }
   }, [isBoosting]);
 
@@ -32,14 +32,9 @@ const PlayerHud = ({ score, level }: PlayerHudProps) => {
       initial={{ opacity: 0, z: 100 }}
       animate={{ opacity: 1, z: 0 }}
       exit={{ opacity: 0, z: -100 }}
-      transition={{ duration: 1, delay: 0.75 }}
+      transition={{ duration: 1, delay: 0.25 }}
     >
       <div className="game-prog-container">
-        <div className="level-indicator">
-          <h3>
-            Level: <span>{level}</span>
-          </h3>
-        </div>
         <div className="score-indicator">
           <h3>
             Score: <span>{score}</span>
