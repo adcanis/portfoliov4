@@ -2,20 +2,12 @@ import React from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import * as THREE from "three";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import { PerspectiveCamera } from "@react-three/drei";
 import { EffectComposer } from "@react-three/postprocessing";
-import { useRecoilState, RecoilRoot } from "recoil";
-import {
-  generateEnemies,
-  calculateDynamicHitDistance,
-  enemyShipPositionState,
-  laserPositionState,
-  scoreState,
-  isBoostingState,
-} from "./lib/GameContext";
-import { CalculateLaserDistance } from "./lib/CalculateLaserDistance";
+import { RecoilRoot } from "recoil";
 import PowerBoost from "./lib/PowerBoost";
+import GameController from "./lib/GameController";
 import Spaceship from "./Spaceship";
 import EnemyShip from "./EnemyShip";
 import { Lasers, LaserController } from "./Lasers";
@@ -24,139 +16,10 @@ import PlayerHud from "./PlayerHud";
 import * as MdIcons from "react-icons/md";
 import * as GiIcons from "react-icons/gi";
 import EnemyLasers, { EnemyLaserController } from "./EnemyLasers";
-
-type GameControllerProps = {
-  isPlaying: boolean;
-  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
-  hasEnded: boolean;
-  setHasEnded: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-const GameController = ({
-  isPlaying,
-  setIsPlaying,
-  hasEnded,
-  setHasEnded,
-}: GameControllerProps) => {
-  const [enemyShips, setEnemyShips] = useRecoilState(enemyShipPositionState);
-  const [lasers, setLaserPositions] = useRecoilState(laserPositionState);
-  const [score, setScore] = useRecoilState(scoreState);
-  const [isBoosting, setIsBoosting] = useRecoilState(isBoostingState);
-
-  // Generate enemyShips when all are defeated
-  React.useEffect(() => {
-    if (isPlaying && enemyShips.length === 0) {
-      setEnemyShips(generateEnemies());
-    }
-  }, [isPlaying, enemyShips, setEnemyShips]);
-
-  // Reset game when game ends
-  React.useEffect(() => {
-    if (hasEnded) {
-      setEnemyShips([]);
-      setLaserPositions([]);
-    }
-  }, [hasEnded, setEnemyShips, setLaserPositions, setScore]);
-
-  useFrame(() => {
-    if (!isPlaying) return;
-
-    // Adjust enemy movement based on boosting
-    const enemySpeedMultiplier = isBoosting ? 5 : 1;
-
-    // Evasive maneuvers
-    const evasiveDistance = 0.5;
-    const evasionMultiplier = 1;
-
-    const updatedEnemyShips = enemyShips.map((enemy, index) => {
-      const time = Date.now() * 0.001 + index;
-      let evasionVector = new THREE.Vector3(0, 0, 0);
-
-      // Calculate evasion vector
-      lasers.forEach((laser: any) => {
-        const distance = CalculateLaserDistance(laser, enemy);
-        if (distance < evasiveDistance) {
-          const direction = new THREE.Vector3(
-            enemy.x - laser.x,
-            enemy.y - laser.y,
-            enemy.z - laser.z
-          ).normalize();
-          const evasion = direction.multiplyScalar(evasionMultiplier);
-          evasionVector.add(evasion);
-        }
-      });
-
-      // randomize enemy movement
-      const speed = Math.random() * 0.2 + 0.1;
-      const amplitude = Math.random() * 5 + 2;
-      const direction = Math.random() < 0.5 ? 1 : -1;
-      const movementType = Math.random();
-      let deltaX = 0;
-      let deltaY = 0;
-      let deltaZ = 0;
-
-      if (movementType < 0.3) {
-        deltaX = speed * direction;
-      } else if (movementType < 0.6) {
-        deltaX = Math.sin(Date.now() * 0.001 + index) * amplitude;
-        deltaY = Math.cos(Date.now() * 0.001 + index) * amplitude;
-      } else {
-        deltaX = (Math.random() - 0.5) * speed;
-        deltaY = (Math.random() - 0.5) * speed;
-        deltaZ = (Math.random() - 0.5) * speed;
-      }
-
-      return {
-        ...enemy,
-        z: enemy.z + deltaZ,
-        x: enemy.x + deltaX,
-        y: enemy.y + deltaY,
-      };
-    });
-    setEnemyShips(updatedEnemyShips);
-
-    // Handle laser movement and collision detection
-    const updatedLasers = lasers.map((laser) => ({
-      ...laser,
-      x: laser.x + laser.velocity[0],
-      y: laser.y + laser.velocity[1],
-      z: laser.z - laser.velocity[2],
-    }));
-
-    // Check for hits
-    const hitEnemyIndices = new Set();
-    updatedLasers.forEach((laser) => {
-      enemyShips.forEach((enemy, index) => {
-        if (
-          CalculateLaserDistance(laser, enemy) <
-          calculateDynamicHitDistance(isBoosting)
-        ) {
-          hitEnemyIndices.add(index);
-          setScore((prevScore) => prevScore + 1);
-        }
-      });
-    });
-
-    // Remove hit enemies and update lasers
-    if (hitEnemyIndices.size > 0) {
-      setEnemyShips(
-        enemyShips.filter((_, index) => !hitEnemyIndices.has(index))
-      );
-    }
-    setLaserPositions(
-      updatedLasers.filter((laser) => laser.z > -laser.range && laser.y > -50)
-    );
-
-    // Generate new enemies if all are defeated
-    if (enemyShips.length === 0) {
-      setEnemyShips(generateEnemies());
-    }
-  });
-
-  return null;
-};
+import Ground from "./Ground";
 
 const Game = () => {
+  const gameContainerRef = React.useRef<any>(null);
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [gameEnded, setGameEnded] = React.useState<boolean>(false);
   const [isMobile, setIsMobile] = React.useState<boolean>(false);
@@ -165,6 +28,18 @@ const Game = () => {
   const [mousePosition, setMousePosition] = React.useState(
     new THREE.Vector3(0, 0, 0)
   );
+
+  const updateCanvasPosition = () => {
+    const canvas = gameContainerRef.current;
+    if (canvas) {
+      const { innerWidth: width, innerHeight: height } = window;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      canvas.style.position = "absolute";
+      canvas.style.top = "0";
+      canvas.style.left = "0";
+    }
+  };
 
   // Detect mobile
   React.useEffect(() => {
@@ -176,6 +51,23 @@ const Game = () => {
       )
     );
     setIsMobile(mobile);
+  }, []);
+
+  // Update canvas position on resize
+  React.useEffect(() => {
+    updateCanvasPosition();
+
+    const handleResize = () => {
+      updateCanvasPosition();
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("scroll", updateCanvasPosition);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", updateCanvasPosition);
+    };
   }, []);
 
   // ESC key to end game
@@ -234,12 +126,6 @@ const Game = () => {
               }}
             >
               <PerspectiveCamera makeDefault fov={50} position={[3, 2, 5]} />
-              <GameController
-                isPlaying={isPlaying}
-                setIsPlaying={setIsPlaying}
-                hasEnded={gameEnded}
-                setHasEnded={setGameEnded}
-              />
               <EnemyShip />
               <EnemyLasers />
               <EnemyLaserController />
@@ -247,10 +133,16 @@ const Game = () => {
               <Spaceship mousePosition={mousePosition} />
               <Lasers />
               <LaserController mousePosition={mousePosition} />
+              <GameController
+                isPlaying={isPlaying}
+                hasEnded={gameEnded}
+                setHasEnded={setGameEnded}
+              />
+              <Ground />
               <directionalLight
                 castShadow
                 color={"#889293"}
-                intensity={5}
+                intensity={2.5}
                 position={[10, 5, 4]}
                 shadow-bias={-0.0005}
                 shadow-mapSize-width={1024}

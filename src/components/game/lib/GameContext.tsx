@@ -1,4 +1,5 @@
 import { atom } from "recoil";
+import * as THREE from "three";
 import { v4 as uuidv4 } from "uuid";
 
 interface Ship {
@@ -30,6 +31,7 @@ interface EnemyShip {
   y: number;
   z: number;
   health: number;
+  direction: THREE.Vector3;
 }
 
 interface EnemyLaser {
@@ -128,17 +130,15 @@ export const calculateDynamicHitDistance = (isBoosting: boolean) => {
   return baseHitDistance * boostMultiplier;
 };
 
-let isFirstGeneration = true;
-
 export const generateEnemies = (): EnemyShip[] => {
+  let isFirstGeneration = true;
   let numberOfEnemies;
 
   if (isFirstGeneration) {
-    // Generate a 1 enemy for the first generation
-    numberOfEnemies = Math.floor(Math.random() * 1) + 1;
+    numberOfEnemies = Math.floor(Math.random() * 3) + 1;
     isFirstGeneration = false;
   } else {
-    numberOfEnemies = 3;
+    numberOfEnemies = 5;
   }
 
   let newEnemies: EnemyShip[] = [];
@@ -149,6 +149,11 @@ export const generateEnemies = (): EnemyShip[] => {
       y: Math.random() * 50 - 10,
       z: -100 - Math.random() * 50,
       health: 100,
+      direction: new THREE.Vector3(
+        Math.random() * 2 - 1,
+        Math.random() * 2 - 1,
+        Math.random() * 2 - 1
+      ).normalize(),
     });
   }
 

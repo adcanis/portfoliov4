@@ -23,6 +23,7 @@ export const EnemyLaserController = () => {
           playerShipPosition.position.z - enemy.z
         ).normalize();
 
+        console.log("fired laser");
         const laserSpeed = 2;
         const velocity = direction.multiplyScalar(laserSpeed);
 
@@ -47,6 +48,7 @@ export const EnemyLaserController = () => {
 
 const EnemyLasers = () => {
   const [lasers, setLasers] = useRecoilState(enemyLaserState);
+  const playerShipPosition = useRecoilValue(shipPositionState);
 
   useFrame(() => {
     const updatedLasers = lasers.map((laser: any) => ({
@@ -57,22 +59,49 @@ const EnemyLasers = () => {
     }));
 
     const lasersInBounds = updatedLasers.filter((laser) => laser.z > -10);
-
     setLasers(lasersInBounds);
   });
 
   return (
     <group>
-      {lasers.map((laser) => (
-        <mesh position={[laser.x, laser.y, laser.z]} key={laser.id}>
-          <sphereGeometry attach="geometry" args={[0.025, 5, 5]} />
-          <meshStandardMaterial
-            attach="material"
-            color="#ffffff"
-            emissive="#ffffff"
-          />
-        </mesh>
-      ))}
+      {lasers.map((laser) => {
+        // Calculate the direction and length of the laser
+        const targetPosition = new THREE.Vector3(
+          playerShipPosition.position.x,
+          playerShipPosition.position.y,
+          playerShipPosition.position.z
+        );
+        const laserPosition = new THREE.Vector3(laser.x, laser.y, laser.z);
+        const direction = new THREE.Vector3().subVectors(
+          targetPosition,
+          laserPosition
+        );
+        const length = direction.length();
+
+        // Create a rotation quaternion to align the cylinder with the direction
+        const quaternion = new THREE.Quaternion().setFromUnitVectors(
+          new THREE.Vector3(0, 1, 0),
+          direction.normalize()
+        );
+
+        return (
+          <mesh
+            position={[laser.x, laser.y, laser.z]}
+            quaternion={quaternion}
+            key={laser.id}
+          >
+            <cylinderGeometry
+              attach="geometry"
+              args={[0.05, 0.05, length, 8, 1, false, 0, Math.PI * 2]}
+            />
+            <meshStandardMaterial
+              attach="material"
+              color="#ff0000"
+              emissive="#ff0000"
+            />
+          </mesh>
+        );
+      })}
     </group>
   );
 };
