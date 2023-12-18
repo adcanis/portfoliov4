@@ -6,8 +6,13 @@ import {
   isBoostingState,
   scoreState,
 } from "./lib/GameContext";
+import * as GiIcons from "react-icons/gi";
 
-const PlayerHud = () => {
+type PlayerHudProps = {
+  isMobile: boolean;
+};
+
+const PlayerHud = ({ isMobile }: PlayerHudProps) => {
   const [healthBarHeight, setHealthBarHeight] = React.useState<string>("");
   const [thrusterBarHeight, setThrusterBarHeight] = React.useState<string>("");
   const [playerHealth] = useRecoilState(playerHealthState);
@@ -34,6 +39,13 @@ const PlayerHud = () => {
       exit={{ opacity: 0, z: -100 }}
       transition={{ duration: 1, delay: 0.25 }}
     >
+      {isMobile && (
+        <div className="fire-button-container">
+          <p>
+            <GiIcons.GiLaserPrecision />
+          </p>
+        </div>
+      )}
       <div className="game-prog-container">
         <div className="score-indicator">
           <h3>

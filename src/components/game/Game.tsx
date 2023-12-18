@@ -51,6 +51,10 @@ const Game = () => {
       )
     );
     setIsMobile(mobile);
+
+    if (window.innerWidth < 768) {
+      setIsMobile(true);
+    }
   }, []);
 
   // Update canvas position on resize
@@ -158,7 +162,7 @@ const Game = () => {
                 <PowerBoost />
               </EffectComposer>
             </Canvas>
-            <PlayerHud />
+            <PlayerHud isMobile={isMobile} />
           </RecoilRoot>
         </React.Suspense>
       ) : (
@@ -183,11 +187,7 @@ const Game = () => {
                 whileInView={{ opacity: 1, z: 0 }}
                 exit={{ opacity: 0, z: -100 }}
                 transition={{ duration: 1, delay: 0.5 }}
-                onClick={() =>
-                  isMobile
-                    ? handleMobileNotification()
-                    : setShowInstructions(true)
-                }
+                onClick={() => setShowInstructions(true)}
               >
                 Play
               </motion.button>

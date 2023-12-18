@@ -8,6 +8,20 @@
     left: 25px;
     bottom: 25px;
     pointer-events: none;
+    .fire-button-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid rgba($grey-dark, 0.25);
+        border-radius: 50%;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 25px;
+        & p {
+            color: rgba($grey-dark, 0.25);
+            font-size: 2em;
+        }
+    }
     .game-prog-container {
         display: flex;
         align-items: center;
