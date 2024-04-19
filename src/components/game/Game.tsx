@@ -17,6 +17,7 @@ import * as MdIcons from "react-icons/md";
 import * as GiIcons from "react-icons/gi";
 import EnemyLasers, { EnemyLaserController } from "./EnemyLasers";
 import Ground from "./Ground";
+import * as Hi2Icons from "react-icons/hi2";
 
 const Game = () => {
   const gameContainerRef = React.useRef<any>(null);
@@ -102,7 +103,7 @@ const Game = () => {
   }, [isPlaying]);
 
   const handleMobileNotification = () => {
-    toast.info("Uh oh! This game is not available on mobile.");
+    toast.info("This game is best played on a desktop.");
   };
 
   const handlePointerMove = (e: any) => {
@@ -114,121 +115,153 @@ const Game = () => {
 
   return (
     <div className="game-container">
-      {isPlaying ? (
-        <React.Suspense fallback={null}>
-          <RecoilRoot>
-            <Canvas
-              key={isPlaying ? "playing" : "not-playing"}
-              shadows
-              onPointerMove={handlePointerMove}
-              style={{
-                position: "absolute",
-                height: "100%",
-                width: "100%",
-                top: "0",
-                left: "0",
-              }}
-            >
-              <PerspectiveCamera makeDefault fov={50} position={[3, 2, 5]} />
-              <EnemyShip />
-              <EnemyLasers />
-              <EnemyLaserController />
-              <Target mousePosition={mousePosition} />
-              <Spaceship mousePosition={mousePosition} />
-              <Lasers />
-              <LaserController mousePosition={mousePosition} />
-              <GameController
-                isPlaying={isPlaying}
-                hasEnded={gameEnded}
-                setHasEnded={setGameEnded}
-              />
-              <Ground />
-              <directionalLight
-                castShadow
-                color={"#889293"}
-                intensity={2.5}
-                position={[10, 5, 4]}
-                shadow-bias={-0.0005}
-                shadow-mapSize-width={1024}
-                shadow-mapSize-height={1024}
-                shadow-camera-near={0.01}
-                shadow-camera-far={20}
-                shadow-camera-top={6}
-                shadow-camera-bottom={-6}
-                shadow-camera-left={-6.2}
-                shadow-camera-right={6.4}
-              />
-              <EffectComposer>
-                <PowerBoost />
-              </EffectComposer>
-            </Canvas>
-            <PlayerHud isMobile={isMobile} />
-          </RecoilRoot>
-        </React.Suspense>
-      ) : (
-        <div className="game-start">
-          {!showInstructions ? (
-            <>
-              <motion.h1
-                initial={{ opacity: 0, y: -10, scale: 0.9 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                transition={{
-                  duration: 0.75,
-                  delay: 0.25,
-                  y: { type: "spring", stiffness: 100, damping: 10 },
+      <motion.div
+        className="title"
+        initial={{ opacity: 0, y: -10, scale: 0.9 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 10, scale: 0.9 }}
+        transition={{
+          duration: 0.5,
+          delay: 0.15,
+          y: { type: "spring", stiffness: 100, damping: 10 },
+        }}
+      >
+        <h3>What I like</h3>
+        <span>
+          <Hi2Icons.HiMiniArrowDownRight />
+        </span>
+      </motion.div>
+      <motion.div
+        className="body"
+        initial={{ opacity: 0, y: -10, scale: 0.9 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 10, scale: 0.9 }}
+        transition={{
+          duration: 0.5,
+          delay: 0.35,
+          y: { type: "spring", stiffness: 100, damping: 10 },
+        }}
+      >
+        {isPlaying ? (
+          <React.Suspense fallback={null}>
+            <RecoilRoot>
+              <Canvas
+                key={isPlaying ? "playing" : "not-playing"}
+                shadows
+                onPointerMove={handlePointerMove}
+                style={{
+                  position: "absolute",
+                  height: "100%",
+                  width: "100%",
+                  top: "0",
+                  left: "0",
                 }}
               >
-                <GiIcons.GiSpaceship />
-              </motion.h1>
-              <motion.button
-                className="btn-transparent"
-                initial={{ opacity: 0, z: 100 }}
-                whileInView={{ opacity: 1, z: 0 }}
-                exit={{ opacity: 0, z: -100 }}
-                transition={{ duration: 1, delay: 0.5 }}
-                onClick={() => setShowInstructions(true)}
-              >
-                Play
-              </motion.button>
-            </>
-          ) : (
-            <>
-              <motion.p
-                initial={{ opacity: 0, y: -10, scale: 0.9 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                transition={{
-                  duration: 0.75,
-                  delay: 0.25,
-                  y: { type: "spring", stiffness: 100, damping: 10 },
-                }}
-              >
-                Use your <MdIcons.MdOutlineMouse /> to move the spaceship
-                <br />
-                Left-Click to shoot
-                <br />
-                Spacebar to boost.
-                <br />
-                Press <span>ESC</span> to end the game.
-              </motion.p>
-              <motion.button
-                className="btn-transparent"
-                initial={{ opacity: 0, z: 100 }}
-                whileInView={{ opacity: 1, z: 0 }}
-                exit={{ opacity: 0, z: -100 }}
-                transition={{ duration: 1, delay: 0.5 }}
-                onClick={() => {
-                  setIsPlaying(true);
-                  setShowInstructions(false);
-                }}
-              >
-                Got it!
-              </motion.button>
-            </>
-          )}
-        </div>
-      )}
+                <PerspectiveCamera makeDefault fov={50} position={[3, 2, 5]} />
+                <EnemyShip />
+                <EnemyLasers />
+                <EnemyLaserController />
+                <Target mousePosition={mousePosition} />
+                <Spaceship mousePosition={mousePosition} />
+                <Lasers />
+                <LaserController mousePosition={mousePosition} />
+                <GameController
+                  isPlaying={isPlaying}
+                  hasEnded={gameEnded}
+                  setHasEnded={setGameEnded}
+                />
+                <Ground />
+                <directionalLight
+                  castShadow
+                  color={"#889293"}
+                  intensity={2.5}
+                  position={[10, 5, 4]}
+                  shadow-bias={-0.0005}
+                  shadow-mapSize-width={1024}
+                  shadow-mapSize-height={1024}
+                  shadow-camera-near={0.01}
+                  shadow-camera-far={20}
+                  shadow-camera-top={6}
+                  shadow-camera-bottom={-6}
+                  shadow-camera-left={-6.2}
+                  shadow-camera-right={6.4}
+                />
+                <EffectComposer>
+                  <PowerBoost />
+                </EffectComposer>
+              </Canvas>
+              <PlayerHud isMobile={isMobile} />
+            </RecoilRoot>
+          </React.Suspense>
+        ) : (
+          <div className="game-start">
+            {!showInstructions ? (
+              <>
+                <motion.h1
+                  initial={{ opacity: 0, y: -10, scale: 0.9 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                  transition={{
+                    duration: 0.75,
+                    delay: 0.25,
+                    y: { type: "spring", stiffness: 100, damping: 10 },
+                  }}
+                >
+                  <GiIcons.GiSpaceship />
+                </motion.h1>
+                <motion.button
+                  className="btn-transparent"
+                  initial={{ opacity: 0, z: 100 }}
+                  whileInView={{ opacity: 1, z: 0 }}
+                  exit={{ opacity: 0, z: -100 }}
+                  transition={{ duration: 1, delay: 0.5 }}
+                  onClick={() =>
+                    isMobile
+                      ? handleMobileNotification()
+                      : setShowInstructions(true)
+                  }
+                >
+                  Play
+                </motion.button>
+              </>
+            ) : (
+              <>
+                <motion.p
+                  initial={{ opacity: 0, y: -10, scale: 0.9 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                  transition={{
+                    duration: 0.75,
+                    delay: 0.25,
+                    y: { type: "spring", stiffness: 100, damping: 10 },
+                  }}
+                >
+                  Use your <MdIcons.MdOutlineMouse /> to move the spaceship
+                  <br />
+                  Left-Click to shoot
+                  <br />
+                  Spacebar to boost.
+                  <br />
+                  Press <span>ESC</span> to end the game.
+                </motion.p>
+                <motion.button
+                  className="btn-transparent"
+                  initial={{ opacity: 0, z: 100 }}
+                  whileInView={{ opacity: 1, z: 0 }}
+                  exit={{ opacity: 0, z: -100 }}
+                  transition={{ duration: 1, delay: 0.5 }}
+                  onClick={() => {
+                    setIsPlaying(true);
+                    setShowInstructions(false);
+                  }}
+                >
+                  Got it!
+                </motion.button>
+              </>
+            )}
+          </div>
+        )}
+      </motion.div>
     </div>
   );
 };

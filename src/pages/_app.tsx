@@ -1,5 +1,6 @@
 import React from "react";
 import type { AppProps } from "next/app";
+import { Amplify } from "aws-amplify";
 import { AnimatePresence, motion } from "framer-motion";
 import { ScrollerMotion } from "scroller-motion";
 import { ToastContainer } from "react-toastify";
@@ -11,6 +12,10 @@ import Navbar from "@/components/Navbar";
 import PageHead from "@/components/PageHead";
 import ContactCard from "@/components/ContactCard";
 
+// Config
+import awsconfig from "@/aws-exports";
+import AppSyncDataProvider from "@/config/AppSyncDataConfig";
+
 // Utils
 import { detectDevToolsShortcut } from "@/utils/detectDevTools";
 
@@ -20,6 +25,9 @@ import "react-toastify/dist/ReactToastify.css";
 
 // Initialize Google Analytics
 ReactGA.initialize(`${process.env.NEXT_PUBLIC_REACT_GA_ID}`);
+
+// Initialize Amplify
+Amplify.configure({ ...awsconfig, ssr: true });
 
 export default function App({ Component, pageProps }: AppProps) {
   const app = React.useRef<HTMLDivElement>(null);
@@ -34,7 +42,7 @@ export default function App({ Component, pageProps }: AppProps) {
   }, []);
 
   return (
-    <React.Fragment>
+    <AppSyncDataProvider>
       <PageHead />
       <ToastContainer
         position="top-center"
@@ -66,6 +74,6 @@ export default function App({ Component, pageProps }: AppProps) {
           <Loader isLoading={isLoading} setIsLoading={setIsLoading} />
         </AnimatePresence>
       )}
-    </React.Fragment>
+    </AppSyncDataProvider>
   );
 }

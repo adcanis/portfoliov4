@@ -1,0 +1,63 @@
+{
+  "api": {
+    "portfolio": {
+      "dependsOn": [],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [],
+          "defaultAuthentication": {
+            "authenticationType": "AWS_LAMBDA",
+            "lambdaAuthorizerConfig": {
+              "lambdaFunction": "authenticateAPI",
+              "ttlSeconds": "300"
+            }
+          }
+        }
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync"
+    }
+  },
+  "function": {
+    "authenticateAPI": {
+      "build": true,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_authenticateAPI_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "authenticateAPI"
+        }
+      ]
+    },
+    "AMPLIFY_function_authenticateAPI_nextPublicLambdaAuthId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "authenticateAPI"
+        }
+      ]
+    },
+    "AMPLIFY_function_authenticateAPI_nextPublicLambdaAuthKey": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "authenticateAPI"
+        }
+      ]
+    },
+    "AMPLIFY_function_authenticateAPI_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "authenticateAPI"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "lambdaLayers": [],
+  "environmentVariableList": [
+    {
+      "cloudFormationParameterName": "nextPublicLambdaAuthKey",
+      "environmentVariableName": "NEXT_PUBLIC_LAMBDA_AUTH_KEY"
+    },
+    {
+      "cloudFormationParameterName": "nextPublicLambdaAuthId",
+      "environmentVariableName": "NEXT_PUBLIC_LAMBDA_AUTH_ID"
+    }
+  ]
+}
