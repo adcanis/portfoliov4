@@ -9,11 +9,11 @@ export const socialLinks = [
     name: "GitHub",
     url: "https://github.com/adcanis",
   },
-  {
-    id: 2,
-    name: "Awwwards",
-    url: "https://www.awwwards.com/adcanis/",
-  },
+  // {
+  //   id: 2,
+  //   name: "Awwwards",
+  //   url: "https://www.awwwards.com/adcanis/",
+  // },
   {
     id: 3,
     name: "Orpetron",
