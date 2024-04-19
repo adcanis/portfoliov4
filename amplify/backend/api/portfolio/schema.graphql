@@ -1,6 +1,0 @@
-type Player @model @auth(rules: [{ allow: custom }]) {
-  id: ID!
-  initials: String
-  score: Int
-  createdAt: AWSDateTime
-}
