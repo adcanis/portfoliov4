@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
+import OWDA from "@/assets/OWDA.svg";
 
 const Navbar = () => {
   const audioRef = React.useRef<any>();
@@ -54,6 +56,18 @@ const Navbar = () => {
           </Link>
         </div>
       </motion.div>
+      <motion.a
+        className="award-container"
+        initial={{ opacity: 0, z: 100 }}
+        animate={{ opacity: 1, z: 0 }}
+        exit={{ opacity: 0, z: -100 }}
+        transition={{ duration: 1, delay: 0.75 }}
+        href="https://orpetron.com/sites/portfolio-2024/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <Image src={OWDA.src} alt="OWDA" width={100} height={100} />
+      </motion.a>
       <motion.div
         className="sound-container"
         initial={{ opacity: 0, z: 100 }}

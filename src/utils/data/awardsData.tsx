@@ -17,7 +17,7 @@ export const AwardsData = [
   {
     id: 4,
     company: "Orpetron",
-    awards: 1,
+    awards: 2,
   },
   {
     id: 5,
